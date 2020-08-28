@@ -89,6 +89,12 @@ struct embedded_module {
     }
 };
 
+#if PY_VERSION_MAJOR >= 3
+#define PYBIND11_ARGV_TYPE wchar_t**
+#else
+#define PYBIND11_ARGV_TYPE char**
+#endif
+
 struct wide_char_arg_deleter {
     void operator()(void* ptr) const {
 #if PY_VERSION_HEX >= 0x030500f0
@@ -147,10 +153,10 @@ inline void set_interpreter_argv(int argc, char** argv, bool add_current_dir_to_
         }
     }
 
-    auto pysys_argv = widened_argv.get();
+    PYBIND11_ARGV_TYPE pysys_argv = widened_argv.get();
 #else
     // python 2.x
-    auto pysys_argv = safe_argv;
+    PYBIND11_ARGV_TYPE pysys_argv = safe_argv;
 #endif
 
     PySys_SetArgv(argc, pysys_argv);
