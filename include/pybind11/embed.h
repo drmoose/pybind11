@@ -89,7 +89,7 @@ struct embedded_module {
     }
 };
 
-#if PY_VERSION_MAJOR >= 3
+#if PY_MAJOR_VERSION >= 3
 #define PYBIND11_ARGV_TYPE wchar_t**
 #else
 #define PYBIND11_ARGV_TYPE char**
@@ -106,7 +106,7 @@ struct wide_char_arg_deleter {
     }
 };
 
-wchar_t* widen_chars(char* safe_arg) {
+inline wchar_t* widen_chars(char* safe_arg) {
 #if PY_VERSION_HEX >= 0x030500f0
     wchar_t* widened_arg = Py_DecodeLocale(safe_arg, nullptr);
 #else
@@ -160,7 +160,7 @@ inline void set_interpreter_argv(int argc, char** argv, bool add_current_dir_to_
 
     PySys_SetArgv(argc, pysys_argv);
     if (!add_current_dir_to_path)
-        PyList_PopItem(py::module::import("sys").attr("path").ptr(), 0);
+        module::import("sys").attr("path").attr("pop")();
 }
 
 PYBIND11_NAMESPACE_END(detail)
